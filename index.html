@@ -19,59 +19,16 @@
   body::before{
     content:"";
     position:fixed;
-    inset:-20%;
+    inset:0;
     background:
-      radial-gradient(circle at 15% 25%, rgba(168,85,247,.55), transparent 42%),
-      radial-gradient(circle at 85% 20%, rgba(249,115,22,.42), transparent 42%),
-      radial-gradient(circle at 65% 85%, rgba(139,92,246,.48), transparent 45%),
-      radial-gradient(circle at 10% 90%, rgba(251,146,60,.30), transparent 42%),
-      radial-gradient(circle at 50% 50%, rgba(88,28,135,.35), transparent 55%);
+      radial-gradient(circle at 15% 25%, rgba(168,85,247,.45), transparent 45%),
+      radial-gradient(circle at 85% 20%, rgba(249,115,22,.35), transparent 45%),
+      radial-gradient(circle at 65% 85%, rgba(139,92,246,.40), transparent 48%),
+      radial-gradient(circle at 10% 90%, rgba(251,146,60,.25), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(88,28,135,.30), transparent 55%);
     filter:blur(60px);
-    transform:translate3d(0,0,0);
-    will-change:transform;
-    animation:drift 32s ease-in-out infinite alternate;
     z-index:-2;
     pointer-events:none;
-    backface-visibility:hidden;
-  }
-
-  body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
-    opacity:.08;
-    mix-blend-mode:overlay;
-    pointer-events:none;
-    z-index:100;
-  }
-
-  @keyframes drift{
-    0%{transform:translate3d(0,0,0)}
-    50%{transform:translate3d(-3%,2%,0)}
-    100%{transform:translate3d(3%,-2%,0)}
-  }
-
-  @keyframes flicker{
-    0%,93%,100%{opacity:0}
-    94%{opacity:.55}
-    95%{opacity:0}
-    96%{opacity:.35}
-    97%{opacity:0}
-  }
-
-  @keyframes glitch{
-    0%{transform:translate(0,0)}
-    20%{transform:translate(-1px,1px)}
-    40%{transform:translate(1px,-1px)}
-    60%{transform:translate(-2px,-1px)}
-    80%{transform:translate(2px,1px)}
-    100%{transform:translate(0,0)}
-  }
-
-  @keyframes scanline{
-    0%{transform:translateY(-100%)}
-    100%{transform:translateY(100%)}
   }
 
   .view{
@@ -82,19 +39,6 @@
     gap:14px;
     grid-template-columns:repeat(5,1fr);
     grid-template-rows:repeat(2,1fr);
-    transition:padding .2s ease;
-  }
-
-  .view::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:rgba(168,85,247,.14);
-    opacity:0;
-    pointer-events:none;
-    animation:flicker 11s steps(1) infinite;
-    z-index:5;
-    will-change:opacity;
   }
 
   .view.has-back{padding-top:92px}
@@ -122,41 +66,9 @@
       inset 0 1px 0 rgba(255,255,255,.06),
       0 10px 26px rgba(88,28,135,.45),
       0 0 20px rgba(168,85,247,.14);
-    contain:layout paint;
-    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
   }
 
-  .tile::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-      radial-gradient(circle at 25% 15%, rgba(217,70,239,.30), transparent 55%),
-      radial-gradient(circle at 80% 85%, rgba(249,115,22,.24), transparent 55%);
-    opacity:0;
-    transition:opacity .2s ease;
-    pointer-events:none;
-    will-change:opacity;
-  }
-
-  .tile::after{
-    content:"";
-    position:absolute;
-    left:0;
-    right:0;
-    top:0;
-    height:2px;
-    background:linear-gradient(90deg, transparent, rgba(249,115,22,.85), transparent);
-    opacity:0;
-    pointer-events:none;
-    will-change:transform, opacity;
-  }
-
-  .tile:hover::before{opacity:1}
-  .tile:hover::after{
-    opacity:1;
-    animation:scanline 1.6s linear infinite;
-  }
   .tile:hover{
     transform:translateY(-3px);
     border-color:rgba(249,115,22,.75);
@@ -165,6 +77,7 @@
       0 14px 36px rgba(249,115,22,.40),
       0 0 34px rgba(217,70,239,.35);
   }
+
   .tile:active{transform:translateY(-1px) scale(.995)}
 
   .tile .label{
@@ -175,16 +88,13 @@
     text-shadow:
       0 0 12px rgba(217,70,239,.45),
       0 0 26px rgba(139,92,246,.35);
-    transition:text-shadow .2s ease;
   }
 
   .tile:hover .label{
     color:#ffe9d6;
     text-shadow:
-      0 0 10px rgba(251,146,60,.95),
-      2px 0 0 rgba(249,115,22,.95),
-      -2px 0 0 rgba(217,70,239,.9);
-    animation:glitch .3s steps(2) infinite;
+      0 0 10px rgba(251,146,60,.85),
+      0 0 22px rgba(249,115,22,.55);
   }
 
   .tile.editing{
@@ -197,10 +107,10 @@
     background:linear-gradient(150deg, rgba(30,10,58,.96), rgba(12,4,22,.97));
     transform:none;
   }
-  .tile.editing::before{display:none}
-  .tile.editing::after{display:none}
-  .tile.editing:hover{transform:none}
-  .tile.editing:hover .label{animation:none}
+  .tile.editing:hover{transform:none;box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 10px 26px rgba(88,28,135,.45),
+      0 0 20px rgba(168,85,247,.14);}
 
   .name-input{
     width:100%;
@@ -353,13 +263,6 @@
     .tile{font-size:1rem;border-radius:16px;padding:12px}
     .back-btn{top:14px;left:14px;width:44px;height:44px}
     .edit-btn{right:14px;bottom:14px;padding:12px 20px;font-size:.9rem}
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    body::before{animation:none}
-    .view::after{animation:none}
-    .tile:hover::after{animation:none}
-    .tile:hover .label{animation:none}
   }
 </style>
 </head>
