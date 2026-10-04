@@ -19,17 +19,20 @@
   body::before{
     content:"";
     position:fixed;
-    inset:-30%;
+    inset:-20%;
     background:
       radial-gradient(circle at 15% 25%, rgba(168,85,247,.55), transparent 42%),
       radial-gradient(circle at 85% 20%, rgba(249,115,22,.42), transparent 42%),
       radial-gradient(circle at 65% 85%, rgba(139,92,246,.48), transparent 45%),
       radial-gradient(circle at 10% 90%, rgba(251,146,60,.30), transparent 42%),
       radial-gradient(circle at 50% 50%, rgba(88,28,135,.35), transparent 55%);
-    filter:blur(55px);
-    animation:drift 24s ease-in-out infinite alternate;
+    filter:blur(60px);
+    transform:translate3d(0,0,0);
+    will-change:transform;
+    animation:drift 32s ease-in-out infinite alternate;
     z-index:-2;
     pointer-events:none;
+    backface-visibility:hidden;
   }
 
   body::after{
@@ -37,51 +40,24 @@
     position:fixed;
     inset:0;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
-    opacity:.09;
+    opacity:.08;
     mix-blend-mode:overlay;
     pointer-events:none;
     z-index:100;
-    animation:grain .6s steps(2) infinite;
   }
 
   @keyframes drift{
-    0%{transform:translate(0,0) scale(1) rotate(0deg)}
-    33%{transform:translate(-4%,3%) scale(1.10) rotate(5deg)}
-    66%{transform:translate(4%,-3%) scale(.94) rotate(-4deg)}
-    100%{transform:translate(-2%,2%) scale(1.05) rotate(2deg)}
-  }
-
-  @keyframes grain{
-    0%{transform:translate(0,0)}
-    50%{transform:translate(-2%,1%)}
-    100%{transform:translate(1%,-1%)}
-  }
-
-  @keyframes pulse{
-    0%,100%{
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.06),
-        0 10px 28px rgba(88,28,135,.45),
-        0 0 20px rgba(168,85,247,.12);
-    }
-    50%{
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.12),
-        0 14px 38px rgba(249,115,22,.35),
-        0 0 34px rgba(217,70,239,.28);
-    }
+    0%{transform:translate3d(0,0,0)}
+    50%{transform:translate3d(-3%,2%,0)}
+    100%{transform:translate3d(3%,-2%,0)}
   }
 
   @keyframes flicker{
-    0%,90%,100%{opacity:0}
-    91%{opacity:1;background:rgba(217,70,239,.10)}
-    92%{opacity:0}
-    93%{opacity:.8;background:rgba(249,115,22,.08)}
-    94%{opacity:0}
-    95%{opacity:.6;background:rgba(168,85,247,.12)}
-    96%{opacity:0}
-    97%{opacity:1;background:rgba(251,146,60,.06)}
-    98%{opacity:0}
+    0%,93%,100%{opacity:0}
+    94%{opacity:.55}
+    95%{opacity:0}
+    96%{opacity:.35}
+    97%{opacity:0}
   }
 
   @keyframes glitch{
@@ -113,25 +89,16 @@
     content:"";
     position:absolute;
     inset:0;
-    background:transparent;
+    background:rgba(168,85,247,.14);
+    opacity:0;
     pointer-events:none;
-    animation:flicker 8s steps(1) infinite;
+    animation:flicker 11s steps(1) infinite;
     z-index:5;
+    will-change:opacity;
   }
 
   .view.has-back{padding-top:92px}
   .view.editing{padding-bottom:100px}
-
-  .view > .tile:nth-child(1){animation-delay:0s}
-  .view > .tile:nth-child(2){animation-delay:-0.55s}
-  .view > .tile:nth-child(3){animation-delay:-1.10s}
-  .view > .tile:nth-child(4){animation-delay:-1.65s}
-  .view > .tile:nth-child(5){animation-delay:-2.20s}
-  .view > .tile:nth-child(6){animation-delay:-2.75s}
-  .view > .tile:nth-child(7){animation-delay:-3.30s}
-  .view > .tile:nth-child(8){animation-delay:-3.85s}
-  .view > .tile:nth-child(9){animation-delay:-4.40s}
-  .view > .tile:nth-child(10){animation-delay:-4.95s}
 
   .tile{
     position:relative;
@@ -151,8 +118,12 @@
     user-select:none;
     overflow:hidden;
     text-align:center;
-    animation:pulse 5.5s ease-in-out infinite;
-    transition:transform .18s ease, border-color .18s ease, background .2s ease;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 10px 26px rgba(88,28,135,.45),
+      0 0 20px rgba(168,85,247,.14);
+    contain:layout paint;
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
 
   .tile::before{
@@ -160,11 +131,12 @@
     position:absolute;
     inset:0;
     background:
-      radial-gradient(circle at 25% 15%, rgba(217,70,239,.28), transparent 55%),
-      radial-gradient(circle at 80% 85%, rgba(249,115,22,.22), transparent 55%);
+      radial-gradient(circle at 25% 15%, rgba(217,70,239,.30), transparent 55%),
+      radial-gradient(circle at 80% 85%, rgba(249,115,22,.24), transparent 55%);
     opacity:0;
     transition:opacity .2s ease;
     pointer-events:none;
+    will-change:opacity;
   }
 
   .tile::after{
@@ -172,10 +144,12 @@
     position:absolute;
     left:0;
     right:0;
+    top:0;
     height:2px;
     background:linear-gradient(90deg, transparent, rgba(249,115,22,.85), transparent);
     opacity:0;
     pointer-events:none;
+    will-change:transform, opacity;
   }
 
   .tile:hover::before{opacity:1}
@@ -186,6 +160,10 @@
   .tile:hover{
     transform:translateY(-3px);
     border-color:rgba(249,115,22,.75);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.10),
+      0 14px 36px rgba(249,115,22,.40),
+      0 0 34px rgba(217,70,239,.35);
   }
   .tile:active{transform:translateY(-1px) scale(.995)}
 
@@ -221,6 +199,7 @@
   }
   .tile.editing::before{display:none}
   .tile.editing::after{display:none}
+  .tile.editing:hover{transform:none}
   .tile.editing:hover .label{animation:none}
 
   .name-input{
@@ -298,8 +277,7 @@
     height:50px;
     border-radius:15px;
     border:1px solid rgba(249,115,22,.55);
-    background:rgba(20,6,40,.88);
-    backdrop-filter:blur(12px);
+    background:rgba(20,6,40,.92);
     color:#f3e8ff;
     font-size:1.3rem;
     line-height:1;
@@ -339,7 +317,7 @@
     box-shadow:
       0 12px 30px rgba(139,92,246,.55),
       0 0 30px rgba(249,115,22,.45);
-    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease, background .2s ease;
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
   }
   .edit-btn:hover{
     transform:translateY(-2px);
@@ -375,6 +353,13 @@
     .tile{font-size:1rem;border-radius:16px;padding:12px}
     .back-btn{top:14px;left:14px;width:44px;height:44px}
     .edit-btn{right:14px;bottom:14px;padding:12px 20px;font-size:.9rem}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    body::before{animation:none}
+    .view::after{animation:none}
+    .tile:hover::after{animation:none}
+    .tile:hover .label{animation:none}
   }
 </style>
 </head>
@@ -457,6 +442,8 @@
     const img = document.createElement('img');
     img.className = 'favicon';
     img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
     img.addEventListener('error', function(){ img.style.display = 'none'; });
     const src = faviconUrl(url);
     if(src){
