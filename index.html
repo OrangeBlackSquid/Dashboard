@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portal</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{
+    background:radial-gradient(circle at 20% 0%, #1b2436 0%, #0a0d14 55%, #05070b 100%);
+    color:#e8ecf5;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .view{
+    position:fixed;
+    inset:0;
+    padding:24px;
+    display:grid;
+    gap:16px;
+    grid-template-columns:repeat(6,1fr);
+    grid-template-rows:repeat(2,1fr);
+    transition:padding .2s ease;
+  }
+  .view.has-back{padding-top:96px}
+  .view.editing{padding-bottom:104px}
+
+  .view > .tile:nth-child(1),
+  .view > .tile:nth-child(2),
+  .view > .tile:nth-child(3){grid-column:span 2}
+  .view > .tile:nth-child(4),
+  .view > .tile:nth-child(5){grid-column:span 3}
+
+  .tile{
+    position:relative;
+    border-radius:22px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(150deg, rgba(38,48,68,.95), rgba(16,20,29,.95));
+    color:#e8ecf5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    padding:20px;
+    font-size:clamp(1.05rem, 1.9vw, 1.75rem);
+    font-weight:650;
+    letter-spacing:.2px;
+    cursor:pointer;
+    user-select:none;
+    overflow:hidden;
+    text-align:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 10px 24px rgba(0,0,0,.35);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .tile::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 50% 0%, rgba(110,160,255,.18), transparent 70%);
+    opacity:0;
+    transition:opacity .18s ease;
+    pointer-events:none;
+  }
+  .tile:hover::before{opacity:1}
+  .tile:hover{transform:translateY(-3px);border-color:rgba(120,170,255,.45)}
+  .tile:active{transform:translateY(-1px) scale(.995)}
+  .tile .label{position:relative;z-index:1;word-break:break-word;line-height:1.2}
+
+  .tile.editing{
+    cursor:default;
+    flex-direction:column;
+    justify-content:center;
+    gap:12px;
+    padding:16px;
+    border-color:rgba(120,170,255,.28);
+    background:linear-gradient(150deg, rgba(30,38,55,.95), rgba(14,18,26,.95));
+    transform:none;
+  }
+  .tile.editing::before{display:none}
+
+  .name-input{
+    width:100%;
+    max-width:420px;
+    text-align:center;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:14px;
+    color:#fff;
+    font:inherit;
+    font-size:clamp(1rem, 1.7vw, 1.5rem);
+    padding:12px 14px;
+    outline:none;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .name-input:focus{border-color:#5b8def;background:rgba(91,141,239,.10)}
+
+  .url-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    max-width:460px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    padding:8px 12px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .url-row:focus-within{border-color:#5b8def;background:rgba(91,141,239,.08)}
+
+  .url-input{
+    flex:1;
+    min-width:0;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:#cfd8e8;
+    font:inherit;
+    font-size:.9rem;
+    padding:6px 2px;
+  }
+  .url-input::placeholder{color:rgba(207,216,232,.35)}
+
+  .favicon{
+    width:24px;
+    height:24px;
+    flex:0 0 auto;
+    border-radius:6px;
+    object-fit:contain;
+    background:rgba(255,255,255,.06);
+  }
+
+  .back-btn{
+    position:fixed;
+    top:22px;
+    left:24px;
+    z-index:60;
+    width:52px;
+    height:52px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(18,23,33,.85);
+    backdrop-filter:blur(10px);
+    color:#e8ecf5;
+    font-size:1.35rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .back-btn:hover{background:rgba(32,42,60,.95);border-color:rgba(120,170,255,.45);transform:translateY(-1px)}
+
+  .edit-btn{
+    position:fixed;
+    right:24px;
+    bottom:24px;
+    z-index:60;
+    padding:14px 26px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.14);
+    background:linear-gradient(140deg,#3b6fe0,#2a4fae);
+    color:#fff;
+    font:inherit;
+    font-size:1rem;
+    font-weight:650;
+    letter-spacing:.3px;
+    cursor:pointer;
+    box-shadow:0 12px 30px rgba(30,70,180,.45);
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease, background .2s ease;
+  }
+  .edit-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+  .edit-btn.done{
+    background:linear-gradient(140deg,#2fae72,#1f7a4f);
+    box-shadow:0 12px 30px rgba(30,150,100,.4);
+  }
+
+  @media (max-width:780px){
+    .view{
+      grid-template-columns:1fr;
+      grid-template-rows:none;
+      grid-auto-rows:minmax(96px,1fr);
+      overflow-y:auto;
+      padding:16px;
+      padding-bottom:100px;
+      gap:12px;
+    }
+    .view.has-back{padding-top:88px}
+    .view.editing{padding-bottom:100px}
+    .view > .tile:nth-child(n){grid-column:span 1}
+    .tile{font-size:1.1rem;border-radius:18px}
+    .back-btn{top:16px;left:16px;width:46px;height:46px}
+    .edit-btn{right:16px;bottom:16px;padding:13px 22px}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+  const KEY = 'genrePortal.v1';
+  const app = document.getElementById('app');
+
+  let data;
+  let currentGenre = null;
+  let editMode = false;
+
+  function defaultData(){
+    const genres = [];
+    for(let i = 0; i < 5; i++){
+      const subs = [];
+      for(let j = 0; j < 5; j++) subs.push({ name: 'Subgenre ' + (j + 1), url: '' });
+      genres.push({ name: 'Genre ' + (i + 1), subs });
+    }
+    return { genres };
+  }
+
+  function normalize(raw){
+    const genres = [];
+    for(let i = 0; i < 5; i++){
+      const g = (raw && raw.genres && raw.genres[i]) || {};
+      const subs = [];
+      for(let j = 0; j < 5; j++){
+        const s = (g.subs && g.subs[j]) || {};
+        subs.push({
+          name: typeof s.name === 'string' ? s.name : 'Subgenre ' + (j + 1),
+          url: typeof s.url === 'string' ? s.url : ''
+        });
+      }
+      genres.push({
+        name: typeof g.name === 'string' ? g.name : 'Genre ' + (i + 1),
+        subs: subs
+      });
+    }
+    return { genres: genres };
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return defaultData();
+      return normalize(JSON.parse(raw));
+    }catch(e){
+      return defaultData();
+    }
+  }
+
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+  }
+
+  function normalizeUrl(u){
+    let v = String(u || '').trim();
+    if(!v) return '';
+    if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) v = 'https://' + v;
+    return v;
+  }
+
+  function faviconUrl(u){
+    const n = normalizeUrl(u);
+    if(!n) return '';
+    try{
+      const host = new URL(n).hostname;
+      if(!host) return '';
+      return 'https://www.google.com/s2/favicons?sz=128&domain=' + encodeURIComponent(host);
+    }catch(e){
+      return '';
+    }
+  }
+
+  function makeFavicon(url){
+    const img = document.createElement('img');
+    img.className = 'favicon';
+    img.alt = '';
+    img.addEventListener('error', function(){ img.style.display = 'none'; });
+    const src = faviconUrl(url);
+    if(src){
+      img.src = src;
+    }else{
+      img.style.display = 'none';
+    }
+    return img;
+  }
+
+  function genreTile(genre, index){
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+
+    if(editMode){
+      tile.classList.add('editing');
+      const input = document.createElement('input');
+      input.className = 'name-input';
+      input.type = 'text';
+      input.value = genre.name;
+      input.placeholder = 'Genre ' + (index + 1);
+      input.maxLength = 60;
+      input.spellcheck = false;
+      input.addEventListener('input', function(){
+        genre.name = input.value;
+        save();
+      });
+      tile.appendChild(input);
+    }else{
+      const label = document.createElement('span');
+      label.className = 'label';
+      label.textContent = genre.name;
+      tile.appendChild(label);
+      tile.addEventListener('click', function(){
+        currentGenre = index;
+        editMode = false;
+        render();
+      });
+    }
+
+    return tile;
+  }
+
+  function subTile(sub, index){
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+
+    if(editMode){
+      tile.classList.add('editing');
+
+      const input = document.createElement('input');
+      input.className = 'name-input';
+      input.type = 'text';
+      input.value = sub.name;
+      input.placeholder = 'Subgenre ' + (index + 1);
+      input.maxLength = 60;
+      input.spellcheck = false;
+      input.addEventListener('input', function(){
+        sub.name = input.value;
+        save();
+      });
+
+      const row = document.createElement('div');
+      row.className = 'url-row';
+
+      const icon = makeFavicon(sub.url);
+
+      const urlInput = document.createElement('input');
+      urlInput.className = 'url-input';
+      urlInput.type = 'text';
+      urlInput.value = sub.url;
+      urlInput.placeholder = 'https://beispiel.de';
+      urlInput.spellcheck = false;
+      urlInput.addEventListener('input', function(){
+        sub.url = urlInput.value;
+        save();
+        const src = faviconUrl(sub.url);
+        if(src){
+          icon.style.display = '';
+          icon.src = src;
+        }else{
+          icon.removeAttribute('src');
+          icon.style.display = 'none';
+        }
+      });
+
+      row.appendChild(icon);
+      row.appendChild(urlInput);
+      tile.appendChild(input);
+      tile.appendChild(row);
+    }else{
+      if(sub.url) tile.appendChild(makeFavicon(sub.url));
+
+      const label = document.createElement('span');
+      label.className = 'label';
+      label.textContent = sub.name;
+      tile.appendChild(label);
+
+      tile.addEventListener('click', function(){
+        const target = normalizeUrl(sub.url);
+        if(!target) return;
+        window.location.href = target;
+      });
+    }
+
+    return tile;
+  }
+
+  function render(){
+    app.innerHTML = '';
+
+    const view = document.createElement('div');
+    view.className = 'view';
+    if(currentGenre !== null) view.classList.add('has-back');
+    if(editMode) view.classList.add('editing');
+
+    if(currentGenre === null){
+      data.genres.forEach(function(genre, i){
+        view.appendChild(genreTile(genre, i));
+      });
+    }else{
+      data.genres[currentGenre].subs.forEach(function(sub, i){
+        view.appendChild(subTile(sub, i));
+      });
+    }
+
+    app.appendChild(view);
+
+    if(currentGenre !== null){
+      const back = document.createElement('button');
+      back.className = 'back-btn';
+      back.type = 'button';
+      back.innerHTML = '&#8592;';
+      back.title = 'Zurück';
+      back.setAttribute('aria-label', 'Zurück');
+      back.addEventListener('click', function(){
+        currentGenre = null;
+        editMode = false;
+        render();
+      });
+      app.appendChild(back);
+    }
+
+    const edit = document.createElement('button');
+    edit.className = 'edit-btn' + (editMode ? ' done' : '');
+    edit.type = 'button';
+    edit.textContent = editMode ? 'Fertig' : 'Edit';
+    edit.addEventListener('click', function(){
+      editMode = !editMode;
+      render();
+    });
+    app.appendChild(edit);
+  }
+
+  data = load();
+  render();
+})();
+</script>
+</body>
+</html>
