@@ -5,296 +5,304 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Portal</title>
 <style>
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0}
-  body{
-    background:#050208;
-    color:#f3e8ff;
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    overflow:hidden;
-    -webkit-tap-highlight-color:transparent;
-    position:relative;
+  :root {
+    --bg: #050208;
+    --text: #f3e8ff;
+    --purple: #a855f7;
+    --purple-dark: #6d28d9;
+    --orange: #f97316;
+    --tile-bg: linear-gradient(150deg, rgba(30,10,58,.94), rgba(10,4,20,.96));
+    --tile-border: rgba(168,85,247,.35);
+    --tile-border-hover: rgba(249,115,22,.75);
+    --input-bg: rgba(168,85,247,.10);
+    --input-border: rgba(168,85,247,.40);
+    --shadow-tile: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 26px rgba(88,28,135,.45), 0 0 20px rgba(168,85,247,.14);
+    --shadow-tile-hover: inset 0 1px 0 rgba(255,255,255,.10), 0 14px 36px rgba(249,115,22,.40), 0 0 34px rgba(217,70,239,.35);
+    --shadow-btn: 0 12px 30px rgba(139,92,246,.55), 0 0 30px rgba(249,115,22,.45);
+    --shadow-btn-hover: 0 16px 42px rgba(168,85,247,.75), 0 0 46px rgba(249,115,22,.65);
+    --transition: .15s ease;
   }
 
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
     background:
       radial-gradient(circle at 15% 25%, rgba(168,85,247,.45), transparent 45%),
       radial-gradient(circle at 85% 20%, rgba(249,115,22,.35), transparent 45%),
       radial-gradient(circle at 65% 85%, rgba(139,92,246,.40), transparent 48%),
       radial-gradient(circle at 10% 90%, rgba(251,146,60,.25), transparent 45%),
       radial-gradient(circle at 50% 50%, rgba(88,28,135,.30), transparent 55%);
-    filter:blur(60px);
-    z-index:-2;
-    pointer-events:none;
+    filter: blur(60px);
+    z-index: -2;
+    pointer-events: none;
   }
 
-  .view{
-    position:fixed;
-    inset:0;
-    padding:22px;
-    display:grid;
-    gap:14px;
-    grid-template-columns:repeat(5,1fr);
-    grid-template-rows:repeat(2,1fr);
+  .view {
+    position: fixed;
+    inset: 0;
+    padding: 22px;
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
   }
 
-  .view.has-back{padding-top:92px}
-  .view.editing{padding-bottom:100px}
+  .view.has-back { padding-top: 92px; }
+  .view.editing { padding-bottom: 100px; }
 
-  .tile{
-    position:relative;
-    border-radius:18px;
-    border:1px solid rgba(168,85,247,.35);
-    background:linear-gradient(150deg, rgba(30,10,58,.94), rgba(10,4,20,.96));
-    color:#f3e8ff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    padding:14px;
-    font-size:clamp(0.85rem, 1.35vw, 1.35rem);
-    font-weight:650;
-    letter-spacing:.3px;
-    cursor:pointer;
-    user-select:none;
-    overflow:hidden;
-    text-align:center;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.06),
-      0 10px 26px rgba(88,28,135,.45),
-      0 0 20px rgba(168,85,247,.14);
-    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  .tile {
+    position: relative;
+    border-radius: 18px;
+    border: 1px solid var(--tile-border);
+    background: var(--tile-bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    font-size: clamp(0.85rem, 1.35vw, 1.35rem);
+    font-weight: 650;
+    letter-spacing: .3px;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: var(--shadow-tile);
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
   }
 
-  .tile:hover{
-    transform:translateY(-3px);
-    border-color:rgba(249,115,22,.75);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.10),
-      0 14px 36px rgba(249,115,22,.40),
-      0 0 34px rgba(217,70,239,.35);
+  .tile:hover {
+    transform: translateY(-3px);
+    border-color: var(--tile-border-hover);
+    box-shadow: var(--shadow-tile-hover);
   }
 
-  .tile:active{transform:translateY(-1px) scale(.995)}
+  .tile:active { transform: translateY(-1px) scale(.995); }
 
-  .tile .label{
-    position:relative;
-    z-index:1;
-    word-break:break-word;
-    line-height:1.2;
-    text-shadow:
-      0 0 12px rgba(217,70,239,.45),
-      0 0 26px rgba(139,92,246,.35);
-  }
-
-  .tile:hover .label{
-    color:#ffe9d6;
-    text-shadow:
-      0 0 10px rgba(251,146,60,.85),
-      0 0 22px rgba(249,115,22,.55);
+  .tile .label {
+    position: relative;
+    z-index: 1;
+    word-break: break-word;
+    line-height: 1.2;
+    text-shadow: 0 0 12px rgba(217,70,239,.45), 0 0 26px rgba(139,92,246,.35);
+    transition: color var(--transition), text-shadow var(--transition);
   }
 
-  .tile.editing{
-    cursor:default;
-    flex-direction:column;
-    justify-content:center;
-    gap:10px;
-    padding:12px;
-    border-color:rgba(249,115,22,.55);
-    background:linear-gradient(150deg, rgba(30,10,58,.96), rgba(12,4,22,.97));
-    transform:none;
-  }
-  .tile.editing:hover{transform:none;box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.06),
-      0 10px 26px rgba(88,28,135,.45),
-      0 0 20px rgba(168,85,247,.14);}
-
-  .name-input{
-    width:100%;
-    max-width:100%;
-    text-align:center;
-    background:rgba(168,85,247,.10);
-    border:1px solid rgba(168,85,247,.40);
-    border-radius:12px;
-    color:#f3e8ff;
-    font:inherit;
-    font-size:clamp(0.85rem, 1.3vw, 1.2rem);
-    padding:9px 10px;
-    outline:none;
-    transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
-  }
-  .name-input::placeholder{color:rgba(243,232,255,.35)}
-  .name-input:focus{
-    border-color:#f97316;
-    background:rgba(249,115,22,.10);
-    box-shadow:
-      0 0 0 3px rgba(249,115,22,.18),
-      0 0 22px rgba(249,115,22,.35);
+  .tile:hover .label {
+    color: #ffe9d6;
+    text-shadow: 0 0 10px rgba(251,146,60,.85), 0 0 22px rgba(249,115,22,.55);
   }
 
-  .url-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    width:100%;
-    max-width:100%;
-    background:rgba(168,85,247,.07);
-    border:1px solid rgba(168,85,247,.30);
-    border-radius:12px;
-    padding:6px 10px;
-    transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
-  }
-  .url-row:focus-within{
-    border-color:#f97316;
-    background:rgba(249,115,22,.08);
-    box-shadow:
-      0 0 0 3px rgba(249,115,22,.15),
-      0 0 20px rgba(249,115,22,.28);
+  .tile.editing {
+    cursor: default;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border-color: rgba(249,115,22,.55);
+    transform: none;
   }
 
-  .url-input{
-    flex:1;
-    min-width:0;
-    background:transparent;
-    border:none;
-    outline:none;
-    color:#e9d5ff;
-    font:inherit;
-    font-size:.8rem;
-    padding:5px 2px;
-  }
-  .url-input::placeholder{color:rgba(233,213,255,.35)}
-
-  .favicon{
-    width:20px;
-    height:20px;
-    flex:0 0 auto;
-    border-radius:5px;
-    object-fit:contain;
-    background:rgba(168,85,247,.15);
-    box-shadow:0 0 10px rgba(249,115,22,.35);
+  .tile.editing:hover {
+    box-shadow: var(--shadow-tile);
   }
 
-  .back-btn{
-    position:fixed;
-    top:20px;
-    left:22px;
-    z-index:60;
-    width:50px;
-    height:50px;
-    border-radius:15px;
-    border:1px solid rgba(249,115,22,.55);
-    background:rgba(20,6,40,.92);
-    color:#f3e8ff;
-    font-size:1.3rem;
-    line-height:1;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:
-      0 0 22px rgba(168,85,247,.35),
-      inset 0 0 12px rgba(249,115,22,.10);
-    transition:background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
-  }
-  .back-btn:hover{
-    background:rgba(40,14,72,.95);
-    border-color:#f97316;
-    transform:translateY(-1px);
-    box-shadow:
-      0 0 32px rgba(249,115,22,.65),
-      0 0 22px rgba(217,70,239,.45);
+  .name-input {
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    color: var(--text);
+    font: inherit;
+    font-size: clamp(0.85rem, 1.3vw, 1.2rem);
+    padding: 9px 10px;
+    outline: none;
+    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
   }
 
-  .edit-btn{
-    position:fixed;
-    right:22px;
-    bottom:22px;
-    z-index:60;
-    padding:13px 24px;
-    border-radius:999px;
-    border:1px solid rgba(249,115,22,.65);
-    background:linear-gradient(140deg,#a855f7,#6d28d9 55%,#f97316);
-    color:#fff;
-    font:inherit;
-    font-size:.95rem;
-    font-weight:650;
-    letter-spacing:.4px;
-    cursor:pointer;
-    box-shadow:
-      0 12px 30px rgba(139,92,246,.55),
-      0 0 30px rgba(249,115,22,.45);
-    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
-  }
-  .edit-btn:hover{
-    transform:translateY(-2px);
-    filter:brightness(1.12);
-    box-shadow:
-      0 16px 42px rgba(168,85,247,.75),
-      0 0 46px rgba(249,115,22,.65);
-  }
-  .edit-btn.done{
-    background:linear-gradient(140deg,#f97316,#c2410c 60%,#7c3aed);
-    box-shadow:
-      0 12px 30px rgba(249,115,22,.6),
-      0 0 34px rgba(217,70,239,.5);
+  .name-input::placeholder { color: rgba(243,232,255,.35); }
+
+  .name-input:focus {
+    border-color: var(--orange);
+    background: rgba(249,115,22,.10);
+    box-shadow: 0 0 0 3px rgba(249,115,22,.18), 0 0 22px rgba(249,115,22,.35);
   }
 
-  @media (max-width:1000px){
-    .tile{font-size:clamp(0.8rem, 1.6vw, 1.15rem);padding:12px}
+  .url-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    background: rgba(168,85,247,.07);
+    border: 1px solid rgba(168,85,247,.30);
+    border-radius: 12px;
+    padding: 6px 10px;
+    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
   }
 
-  @media (max-width:780px){
-    .view{
-      grid-template-columns:repeat(2,1fr);
-      grid-template-rows:none;
-      grid-auto-rows:minmax(96px,auto);
-      overflow-y:auto;
-      padding:14px;
-      padding-top:80px;
-      padding-bottom:96px;
-      gap:10px;
+  .url-row:focus-within {
+    border-color: var(--orange);
+    background: rgba(249,115,22,.08);
+    box-shadow: 0 0 0 3px rgba(249,115,22,.15), 0 0 20px rgba(249,115,22,.28);
+  }
+
+  .url-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e9d5ff;
+    font: inherit;
+    font-size: .8rem;
+    padding: 5px 2px;
+  }
+
+  .url-input::placeholder { color: rgba(233,213,255,.35); }
+
+  .favicon {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    border-radius: 5px;
+    object-fit: contain;
+    background: rgba(168,85,247,.15);
+    box-shadow: 0 0 10px rgba(249,115,22,.35);
+  }
+
+  .back-btn {
+    position: fixed;
+    top: 20px;
+    left: 22px;
+    z-index: 60;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    border: 1px solid rgba(249,115,22,.55);
+    background: rgba(20,6,40,.92);
+    color: var(--text);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 22px rgba(168,85,247,.35), inset 0 0 12px rgba(249,115,22,.10);
+    transition: background var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  }
+
+  .back-btn:hover {
+    background: rgba(40,14,72,.95);
+    border-color: var(--orange);
+    transform: translateY(-1px);
+    box-shadow: 0 0 32px rgba(249,115,22,.65), 0 0 22px rgba(217,70,239,.45);
+  }
+
+  .edit-btn {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 60;
+    padding: 13px 24px;
+    border-radius: 999px;
+    border: 1px solid rgba(249,115,22,.65);
+    background: linear-gradient(140deg, var(--purple), var(--purple-dark) 55%, var(--orange));
+    color: #fff;
+    font: inherit;
+    font-size: .95rem;
+    font-weight: 650;
+    letter-spacing: .4px;
+    cursor: pointer;
+    box-shadow: var(--shadow-btn);
+    transition: transform var(--transition), box-shadow var(--transition), filter var(--transition), background var(--transition);
+  }
+
+  .edit-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.12);
+    box-shadow: var(--shadow-btn-hover);
+  }
+
+  .edit-btn.done {
+    background: linear-gradient(140deg, var(--orange), #c2410c 60%, var(--purple-dark));
+    box-shadow: 0 12px 30px rgba(249,115,22,.6), 0 0 34px rgba(217,70,239,.5);
+  }
+
+  @media (max-width: 1000px) {
+    .tile { font-size: clamp(0.8rem, 1.6vw, 1.15rem); padding: 12px; }
+  }
+
+  @media (max-width: 780px) {
+    .view {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: none;
+      grid-auto-rows: minmax(96px, auto);
+      overflow-y: auto;
+      padding: 14px;
+      padding-top: 80px;
+      padding-bottom: 96px;
+      gap: 10px;
     }
-    .view.has-back{padding-top:80px}
-    .view.editing{padding-bottom:96px}
-    .tile{font-size:1rem;border-radius:16px;padding:12px}
-    .back-btn{top:14px;left:14px;width:44px;height:44px}
-    .edit-btn{right:14px;bottom:14px;padding:12px 20px;font-size:.9rem}
+    .tile { font-size: 1rem; border-radius: 16px; padding: 12px; }
+    .back-btn { top: 14px; left: 14px; width: 44px; height: 44px; }
+    .edit-btn { right: 14px; bottom: 14px; padding: 12px 20px; font-size: .9rem; }
   }
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
-(function(){
-  const KEY = 'genrePortal.v1';
-  const COUNT = 10;
+(function () {
+  'use strict';
+
+  const STORAGE_KEY = 'genrePortal.v1';
+  const GRID_SIZE = 10;
+  const MAX_NAME_LENGTH = 60;
+
   const app = document.getElementById('app');
 
   let data;
-  let currentGenre = null;
-  let editMode = false;
+  let activeGenreIndex = null;
+  let isEditing = false;
 
-  function defaultData(){
+  // ==== DATA ====
+
+  function createDefaultData() {
     const genres = [];
-    for(let i = 0; i < COUNT; i++){
+    for (let i = 0; i < GRID_SIZE; i++) {
       const subs = [];
-      for(let j = 0; j < COUNT; j++) subs.push({ name: 'Subgenre ' + (j + 1), url: '' });
+      for (let j = 0; j < GRID_SIZE; j++) {
+        subs.push({ name: 'Subgenre ' + (j + 1), url: '' });
+      }
       genres.push({ name: 'Genre ' + (i + 1), subs });
     }
     return { genres };
   }
 
-  function normalize(raw){
+  function normalizeData(raw) {
     const genres = [];
-    for(let i = 0; i < COUNT; i++){
-      const g = (raw && raw.genres && raw.genres[i]) || {};
+    for (let i = 0; i < GRID_SIZE; i++) {
+      const g = raw?.genres?.[i] || {};
       const subs = [];
-      for(let j = 0; j < COUNT; j++){
-        const s = (g.subs && g.subs[j]) || {};
+      for (let j = 0; j < GRID_SIZE; j++) {
+        const s = g.subs?.[j] || {};
         subs.push({
           name: typeof s.name === 'string' ? s.name : 'Subgenre ' + (j + 1),
           url: typeof s.url === 'string' ? s.url : ''
@@ -302,206 +310,237 @@
       }
       genres.push({
         name: typeof g.name === 'string' ? g.name : 'Genre ' + (i + 1),
-        subs: subs
+        subs
       });
     }
-    return { genres: genres };
+    return { genres };
   }
 
-  function load(){
-    try{
-      const raw = localStorage.getItem(KEY);
-      if(!raw) return defaultData();
-      return normalize(JSON.parse(raw));
-    }catch(e){
-      return defaultData();
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return createDefaultData();
+      return normalizeData(JSON.parse(raw));
+    } catch {
+      return createDefaultData();
     }
   }
 
-  function save(){
-    try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+  function saveData() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {}
   }
 
-  function normalizeUrl(u){
-    let v = String(u || '').trim();
-    if(!v) return '';
-    if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) v = 'https://' + v;
+  // ==== URL & FAVICON ====
+
+  function normalizeUrl(url) {
+    let v = String(url || '').trim();
+    if (!v) return '';
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) v = 'https://' + v;
     return v;
   }
 
-  function faviconUrl(u){
-    const n = normalizeUrl(u);
-    if(!n) return '';
-    try{
-      const host = new URL(n).hostname;
-      if(!host) return '';
+  function getFaviconUrl(url) {
+    const normalized = normalizeUrl(url);
+    if (!normalized) return '';
+    try {
+      const host = new URL(normalized).hostname;
+      if (!host) return '';
       return 'https://www.google.com/s2/favicons?sz=128&domain=' + encodeURIComponent(host);
-    }catch(e){
+    } catch {
       return '';
     }
   }
 
-  function makeFavicon(url){
+  function createFavicon(url) {
     const img = document.createElement('img');
     img.className = 'favicon';
     img.alt = '';
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.addEventListener('error', function(){ img.style.display = 'none'; });
-    const src = faviconUrl(url);
-    if(src){
+    img.addEventListener('error', () => { img.style.display = 'none'; }, { once: true });
+    
+    const src = getFaviconUrl(url);
+    if (src) {
       img.src = src;
-    }else{
+    } else {
       img.style.display = 'none';
     }
     return img;
   }
 
-  function genreTile(genre, index){
-    const tile = document.createElement('div');
-    tile.className = 'tile';
+  function updateFavicon(img, url) {
+    const src = getFaviconUrl(url);
+    if (src) {
+      img.style.display = '';
+      img.src = src;
+    } else {
+      img.removeAttribute('src');
+      img.style.display = 'none';
+    }
+  }
 
-    if(editMode){
+  // ==== DOM HELPERS ====
+
+  function createElement(tag, className, text = '') {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text) el.textContent = text;
+    return el;
+  }
+
+  function createTextInput(value, placeholder, onInput) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'name-input';
+    input.value = value;
+    input.placeholder = placeholder;
+    input.maxLength = MAX_NAME_LENGTH;
+    input.spellcheck = false;
+    input.addEventListener('input', onInput);
+    return input;
+  }
+
+  // ==== TILES ====
+
+  function buildGenreTile(genre, index) {
+    const tile = createElement('div', 'tile');
+
+    if (isEditing) {
       tile.classList.add('editing');
-      const input = document.createElement('input');
-      input.className = 'name-input';
-      input.type = 'text';
-      input.value = genre.name;
-      input.placeholder = 'Genre ' + (index + 1);
-      input.maxLength = 60;
-      input.spellcheck = false;
-      input.addEventListener('input', function(){
-        genre.name = input.value;
-        save();
+      const input = createTextInput(genre.name, 'Genre ' + (index + 1), (e) => {
+        genre.name = e.target.value;
+        saveData();
       });
       tile.appendChild(input);
-    }else{
-      const label = document.createElement('span');
-      label.className = 'label';
-      label.textContent = genre.name;
+    } else {
+      const label = createElement('span', 'label', genre.name);
       tile.appendChild(label);
-      tile.addEventListener('click', function(){
-        currentGenre = index;
-        editMode = false;
-        render();
-      });
+      tile.addEventListener('click', () => enterGenre(index));
     }
 
     return tile;
   }
 
-  function subTile(sub, index){
-    const tile = document.createElement('div');
-    tile.className = 'tile';
+  function buildSubTile(sub, index) {
+    const tile = createElement('div', 'tile');
 
-    if(editMode){
+    if (isEditing) {
       tile.classList.add('editing');
 
-      const input = document.createElement('input');
-      input.className = 'name-input';
-      input.type = 'text';
-      input.value = sub.name;
-      input.placeholder = 'Subgenre ' + (index + 1);
-      input.maxLength = 60;
-      input.spellcheck = false;
-      input.addEventListener('input', function(){
-        sub.name = input.value;
-        save();
+      const nameInput = createTextInput(sub.name, 'Subgenre ' + (index + 1), (e) => {
+        sub.name = e.target.value;
+        saveData();
       });
 
-      const row = document.createElement('div');
-      row.className = 'url-row';
-
-      const icon = makeFavicon(sub.url);
-
+      const urlRow = createElement('div', 'url-row');
+      const icon = createFavicon(sub.url);
+      
       const urlInput = document.createElement('input');
-      urlInput.className = 'url-input';
       urlInput.type = 'text';
+      urlInput.className = 'url-input';
       urlInput.value = sub.url;
       urlInput.placeholder = 'https://beispiel.de';
       urlInput.spellcheck = false;
-      urlInput.addEventListener('input', function(){
-        sub.url = urlInput.value;
-        save();
-        const src = faviconUrl(sub.url);
-        if(src){
-          icon.style.display = '';
-          icon.src = src;
-        }else{
-          icon.removeAttribute('src');
-          icon.style.display = 'none';
-        }
+      urlInput.addEventListener('input', (e) => {
+        sub.url = e.target.value;
+        saveData();
+        updateFavicon(icon, sub.url);
       });
 
-      row.appendChild(icon);
-      row.appendChild(urlInput);
-      tile.appendChild(input);
-      tile.appendChild(row);
-    }else{
-      if(sub.url) tile.appendChild(makeFavicon(sub.url));
+      urlRow.appendChild(icon);
+      urlRow.appendChild(urlInput);
+      tile.appendChild(nameInput);
+      tile.appendChild(urlRow);
+    } else {
+      if (sub.url) {
+        tile.appendChild(createFavicon(sub.url));
+      }
 
-      const label = document.createElement('span');
-      label.className = 'label';
-      label.textContent = sub.name;
+      const label = createElement('span', 'label', sub.name);
       tile.appendChild(label);
-
-      tile.addEventListener('click', function(){
+      
+      tile.addEventListener('click', () => {
         const target = normalizeUrl(sub.url);
-        if(!target) return;
-        window.location.href = target;
+        if (target) window.location.href = target;
       });
     }
 
     return tile;
   }
 
-  function render(){
+  // ==== ACTIONS ====
+
+  function enterGenre(index) {
+    activeGenreIndex = index;
+    isEditing = false;
+    render();
+  }
+
+  function exitGenre() {
+    activeGenreIndex = null;
+    isEditing = false;
+    render();
+  }
+
+  function toggleEditing() {
+    isEditing = !isEditing;
+    render();
+  }
+
+  // ==== RENDER ====
+
+  function render() {
     app.innerHTML = '';
 
-    const view = document.createElement('div');
-    view.className = 'view';
-    if(currentGenre !== null) view.classList.add('has-back');
-    if(editMode) view.classList.add('editing');
+    const view = createElement('div', 'view');
+    if (activeGenreIndex !== null) view.classList.add('has-back');
+    if (isEditing) view.classList.add('editing');
 
-    if(currentGenre === null){
-      data.genres.forEach(function(genre, i){
-        view.appendChild(genreTile(genre, i));
+    if (activeGenreIndex === null) {
+      data.genres.forEach((genre, i) => {
+        view.appendChild(buildGenreTile(genre, i));
       });
-    }else{
-      data.genres[currentGenre].subs.forEach(function(sub, i){
-        view.appendChild(subTile(sub, i));
+    } else {
+      data.genres[activeGenreIndex].subs.forEach((sub, i) => {
+        view.appendChild(buildSubTile(sub, i));
       });
     }
 
     app.appendChild(view);
 
-    if(currentGenre !== null){
-      const back = document.createElement('button');
-      back.className = 'back-btn';
-      back.type = 'button';
-      back.innerHTML = '&#8592;';
-      back.title = 'Zurück';
-      back.setAttribute('aria-label', 'Zurück');
-      back.addEventListener('click', function(){
-        currentGenre = null;
-        editMode = false;
-        render();
-      });
-      app.appendChild(back);
+    if (activeGenreIndex !== null) {
+      const backBtn = createElement('button', 'back-btn');
+      backBtn.type = 'button';
+      backBtn.innerHTML = '&#8592;';
+      backBtn.title = 'Zurück';
+      backBtn.setAttribute('aria-label', 'Zurück');
+      backBtn.addEventListener('click', exitGenre);
+      app.appendChild(backBtn);
     }
 
-    const edit = document.createElement('button');
-    edit.className = 'edit-btn' + (editMode ? ' done' : '');
-    edit.type = 'button';
-    edit.textContent = editMode ? 'Fertig' : 'Edit';
-    edit.addEventListener('click', function(){
-      editMode = !editMode;
-      render();
-    });
-    app.appendChild(edit);
+    const editBtn = createElement(
+      'button',
+      'edit-btn' + (isEditing ? ' done' : ''),
+      isEditing ? 'Fertig' : 'Bearbeiten'
+    );
+    editBtn.type = 'button';
+    editBtn.addEventListener('click', toggleEditing);
+    app.appendChild(editBtn);
   }
 
-  data = load();
+  // ==== KEYBOARD ====
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && activeGenreIndex !== null) {
+      exitGenre();
+    }
+  });
+
+  // ==== INIT ====
+
+  data = loadData();
   render();
 })();
 </script>
