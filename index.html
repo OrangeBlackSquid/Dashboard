@@ -6,21 +6,14 @@
 <title>Portal</title>
 <style>
   :root {
-    --bg: #050208;
-    --text: #f3e8ff;
-    --purple: #a855f7;
-    --purple-dark: #6d28d9;
-    --orange: #f97316;
-    --tile-bg: linear-gradient(150deg, rgba(30,10,58,.94), rgba(10,4,20,.96));
-    --tile-border: rgba(168,85,247,.35);
-    --tile-border-hover: rgba(249,115,22,.75);
-    --input-bg: rgba(168,85,247,.10);
-    --input-border: rgba(168,85,247,.40);
-    --shadow-tile: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 26px rgba(88,28,135,.45), 0 0 20px rgba(168,85,247,.14);
-    --shadow-tile-hover: inset 0 1px 0 rgba(255,255,255,.10), 0 14px 36px rgba(249,115,22,.40), 0 0 34px rgba(217,70,239,.35);
-    --shadow-btn: 0 12px 30px rgba(139,92,246,.55), 0 0 30px rgba(249,115,22,.45);
-    --shadow-btn-hover: 0 16px 42px rgba(168,85,247,.75), 0 0 46px rgba(249,115,22,.65);
-    --transition: .15s ease;
+    --bg: #0d1014;
+    --surface: rgba(255, 255, 255, 0.03);
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-focus: rgba(255, 255, 255, 0.25);
+    --text: #e8ebee;
+    --text-dim: #5c6169;
+    --accent: #e8ebee;
   }
 
   * { box-sizing: border-box; }
@@ -29,139 +22,107 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     overflow: hidden;
+    -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
-    position: relative;
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(circle at 15% 25%, rgba(168,85,247,.45), transparent 45%),
-      radial-gradient(circle at 85% 20%, rgba(249,115,22,.35), transparent 45%),
-      radial-gradient(circle at 65% 85%, rgba(139,92,246,.40), transparent 48%),
-      radial-gradient(circle at 10% 90%, rgba(251,146,60,.25), transparent 45%),
-      radial-gradient(circle at 50% 50%, rgba(88,28,135,.30), transparent 55%);
-    filter: blur(60px);
-    z-index: -2;
-    pointer-events: none;
+    touch-action: manipulation;
   }
 
   .view {
     position: fixed;
     inset: 0;
-    padding: 22px;
+    padding: 24px;
     display: grid;
-    gap: 14px;
+    gap: 12px;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(2, 1fr);
   }
 
-  .view.has-back { padding-top: 92px; }
-  .view.editing { padding-bottom: 100px; }
+  .view.has-back { padding-top: 88px; }
+  .view.editing { padding-bottom: 92px; }
 
   .tile {
     position: relative;
-    border-radius: 18px;
-    border: 1px solid var(--tile-border);
-    background: var(--tile-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
     color: var(--text);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px;
-    font-size: clamp(0.85rem, 1.35vw, 1.35rem);
-    font-weight: 650;
-    letter-spacing: .3px;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    font-size: clamp(0.95rem, 1.4vw, 1.25rem);
+    font-weight: 600;
+    letter-spacing: 0.2px;
     cursor: pointer;
     user-select: none;
     overflow: hidden;
     text-align: center;
-    box-shadow: var(--shadow-tile);
-    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
   }
 
   .tile:hover {
-    transform: translateY(-3px);
-    border-color: var(--tile-border-hover);
-    box-shadow: var(--shadow-tile-hover);
+    background: var(--surface-hover);
   }
 
-  .tile:active { transform: translateY(-1px) scale(.995); }
+  .tile:active {
+    transform: scale(0.98);
+  }
 
   .tile .label {
-    position: relative;
-    z-index: 1;
     word-break: break-word;
     line-height: 1.2;
-    text-shadow: 0 0 12px rgba(217,70,239,.45), 0 0 26px rgba(139,92,246,.35);
-    transition: color var(--transition), text-shadow var(--transition);
-  }
-
-  .tile:hover .label {
-    color: #ffe9d6;
-    text-shadow: 0 0 10px rgba(251,146,60,.85), 0 0 22px rgba(249,115,22,.55);
+    width: 100%;
   }
 
   .tile.editing {
     cursor: default;
-    flex-direction: column;
     justify-content: center;
-    gap: 10px;
     padding: 12px;
-    border-color: rgba(249,115,22,.55);
-    transform: none;
+    gap: 8px;
   }
 
   .tile.editing:hover {
-    box-shadow: var(--shadow-tile);
+    background: var(--surface);
+  }
+
+  .tile.editing:active {
+    transform: none;
   }
 
   .name-input {
     width: 100%;
-    max-width: 100%;
     text-align: center;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
     color: var(--text);
     font: inherit;
-    font-size: clamp(0.85rem, 1.3vw, 1.2rem);
-    padding: 9px 10px;
+    font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+    padding: 10px;
     outline: none;
-    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+    transition: border-color 0.15s ease;
   }
 
-  .name-input::placeholder { color: rgba(243,232,255,.35); }
-
-  .name-input:focus {
-    border-color: var(--orange);
-    background: rgba(249,115,22,.10);
-    box-shadow: 0 0 0 3px rgba(249,115,22,.18), 0 0 22px rgba(249,115,22,.35);
-  }
+  .name-input::placeholder { color: var(--text-dim); }
+  .name-input:focus { border-color: var(--border-focus); }
 
   .url-row {
     display: flex;
     align-items: center;
     gap: 8px;
     width: 100%;
-    max-width: 100%;
-    background: rgba(168,85,247,.07);
-    border: 1px solid rgba(168,85,247,.30);
-    border-radius: 12px;
-    padding: 6px 10px;
-    transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 8px;
+    transition: border-color 0.15s ease;
   }
 
-  .url-row:focus-within {
-    border-color: var(--orange);
-    background: rgba(249,115,22,.08);
-    box-shadow: 0 0 0 3px rgba(249,115,22,.15), 0 0 20px rgba(249,115,22,.28);
-  }
+  .url-row:focus-within { border-color: var(--border-focus); }
 
   .url-input {
     flex: 1;
@@ -169,100 +130,93 @@
     background: transparent;
     border: none;
     outline: none;
-    color: #e9d5ff;
+    color: var(--text);
     font: inherit;
-    font-size: .8rem;
-    padding: 5px 2px;
+    font-size: 0.75rem;
+    padding: 6px 4px;
   }
 
-  .url-input::placeholder { color: rgba(233,213,255,.35); }
+  .url-input::placeholder { color: var(--text-dim); }
 
   .favicon {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     flex: 0 0 auto;
-    border-radius: 5px;
+    border-radius: 4px;
     object-fit: contain;
-    background: rgba(168,85,247,.15);
-    box-shadow: 0 0 10px rgba(249,115,22,.35);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .back-btn {
     position: fixed;
     top: 20px;
-    left: 22px;
+    left: 24px;
     z-index: 60;
-    width: 50px;
-    height: 50px;
-    border-radius: 15px;
-    border: 1px solid rgba(249,115,22,.55);
-    background: rgba(20,6,40,.92);
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
     color: var(--text);
-    font-size: 1.3rem;
-    line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 22px rgba(168,85,247,.35), inset 0 0 12px rgba(249,115,22,.10);
-    transition: background var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    transition: background 0.15s ease, transform 0.1s ease;
   }
 
-  .back-btn:hover {
-    background: rgba(40,14,72,.95);
-    border-color: var(--orange);
-    transform: translateY(-1px);
-    box-shadow: 0 0 32px rgba(249,115,22,.65), 0 0 22px rgba(217,70,239,.45);
-  }
+  .back-btn:hover { background: var(--surface-hover); }
+  .back-btn:active { transform: scale(0.95); }
+  .back-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
   .edit-btn {
     position: fixed;
-    right: 22px;
-    bottom: 22px;
+    right: 24px;
+    bottom: 24px;
     z-index: 60;
-    padding: 13px 24px;
-    border-radius: 999px;
-    border: 1px solid rgba(249,115,22,.65);
-    background: linear-gradient(140deg, var(--purple), var(--purple-dark) 55%, var(--orange));
-    color: #fff;
+    padding: 14px 28px;
+    border-radius: 100px;
+    border: none;
+    background: var(--accent);
+    color: var(--bg);
     font: inherit;
-    font-size: .95rem;
-    font-weight: 650;
-    letter-spacing: .4px;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: var(--shadow-btn);
-    transition: transform var(--transition), box-shadow var(--transition), filter var(--transition), background var(--transition);
+    transition: opacity 0.15s ease, transform 0.1s ease;
   }
 
-  .edit-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.12);
-    box-shadow: var(--shadow-btn-hover);
-  }
+  .edit-btn:hover { opacity: 0.9; }
+  .edit-btn:active { transform: scale(0.97); }
 
   .edit-btn.done {
-    background: linear-gradient(140deg, var(--orange), #c2410c 60%, var(--purple-dark));
-    box-shadow: 0 12px 30px rgba(249,115,22,.6), 0 0 34px rgba(217,70,239,.5);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+  }
+
+  .edit-btn.done:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   @media (max-width: 1000px) {
-    .tile { font-size: clamp(0.8rem, 1.6vw, 1.15rem); padding: 12px; }
+    .tile { font-size: clamp(0.85rem, 1.6vw, 1.1rem); }
   }
 
   @media (max-width: 780px) {
     .view {
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: none;
-      grid-auto-rows: minmax(96px, auto);
+      grid-auto-rows: minmax(90px, auto);
       overflow-y: auto;
-      padding: 14px;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
       padding-top: 80px;
       padding-bottom: 96px;
       gap: 10px;
     }
-    .tile { font-size: 1rem; border-radius: 16px; padding: 12px; }
-    .back-btn { top: 14px; left: 14px; width: 44px; height: 44px; }
-    .edit-btn { right: 14px; bottom: 14px; padding: 12px 20px; font-size: .9rem; }
+    .tile { border-radius: 14px; padding: 12px; }
+    .back-btn { top: 16px; left: 16px; width: 40px; height: 40px; }
+    .edit-btn { right: 16px; bottom: 16px; padding: 12px 24px; font-size: 0.9rem; }
   }
 </style>
 </head>
@@ -281,8 +235,6 @@
   let data;
   let activeGenreIndex = null;
   let isEditing = false;
-
-  // ==== DATA ====
 
   function createDefaultData() {
     const genres = [];
@@ -332,8 +284,6 @@
     } catch {}
   }
 
-  // ==== URL & FAVICON ====
-
   function normalizeUrl(url) {
     let v = String(url || '').trim();
     if (!v) return '';
@@ -381,8 +331,6 @@
     }
   }
 
-  // ==== DOM HELPERS ====
-
   function createElement(tag, className, text = '') {
     const el = document.createElement(tag);
     if (className) el.className = className;
@@ -401,8 +349,6 @@
     input.addEventListener('input', onInput);
     return input;
   }
-
-  // ==== TILES ====
 
   function buildGenreTile(genre, index) {
     const tile = createElement('div', 'tile');
@@ -441,7 +387,7 @@
       urlInput.type = 'text';
       urlInput.className = 'url-input';
       urlInput.value = sub.url;
-      urlInput.placeholder = 'https://beispiel.de';
+      urlInput.placeholder = 'https://...';
       urlInput.spellcheck = false;
       urlInput.addEventListener('input', (e) => {
         sub.url = e.target.value;
@@ -470,8 +416,6 @@
     return tile;
   }
 
-  // ==== ACTIONS ====
-
   function enterGenre(index) {
     activeGenreIndex = index;
     isEditing = false;
@@ -488,8 +432,6 @@
     isEditing = !isEditing;
     render();
   }
-
-  // ==== RENDER ====
 
   function render() {
     app.innerHTML = '';
@@ -513,9 +455,9 @@
     if (activeGenreIndex !== null) {
       const backBtn = createElement('button', 'back-btn');
       backBtn.type = 'button';
-      backBtn.innerHTML = '&#8592;';
       backBtn.title = 'Zurück';
       backBtn.setAttribute('aria-label', 'Zurück');
+      backBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
       backBtn.addEventListener('click', exitGenre);
       app.appendChild(backBtn);
     }
@@ -523,22 +465,18 @@
     const editBtn = createElement(
       'button',
       'edit-btn' + (isEditing ? ' done' : ''),
-      isEditing ? 'Fertig' : 'Bearbeiten'
+      isEditing ? 'fertig' : 'bearbeiten'
     );
     editBtn.type = 'button';
     editBtn.addEventListener('click', toggleEditing);
     app.appendChild(editBtn);
   }
 
-  // ==== KEYBOARD ====
-
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && activeGenreIndex !== null) {
       exitGenre();
     }
   });
-
-  // ==== INIT ====
 
   data = loadData();
   render();
